@@ -9,7 +9,7 @@ class Order():
     def update_size(self, update, id):
         self.size += update
         if not self.size:
-            del self.owner._open_orders[id]
+            del self.owner.get_open_orders()[id]
             del self
 
     def cancel_order(self):

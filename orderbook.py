@@ -44,7 +44,7 @@ class Orderbook():
 
             self.order_cache += incoming_orders
 
-            participant_data[participant._name] = [participant.cash, participant._open_orders, participant._open_positions]
+            participant_data[participant.get_name()] = [participant.get_cash(), participant.get_open_orders(), participant.get_open_positions()]
 
         self.all_participant_history.append(participant_data)
 
@@ -127,9 +127,9 @@ class Orderbook():
 
     def update_order_book(self):
         for order in self.order_cache:
-            if order.asset not in order.owner._order_limits: order.owner._order_limits[order.asset] = 0
+            if order.asset not in order.owner.get_current_position_size(): order.owner.get_current_position_size()[order.asset] = 0
 
-            if abs(order.size + order.owner._order_limits[order.asset]) <= order.owner._position_limits:
+            if abs(order.size + order.owner.get_current_position_size()[order.asset]) <= order.owner.get_position_limits():
                 self.order_history.append(order)
                 bid_or_ask = ["bids", "asks"][int((order.size / abs(order.size) - 1) / 2)]
                 
@@ -157,36 +157,36 @@ class Orderbook():
                     self.priv_order_book[order.asset][bid_or_ask][order.price]["tick"] = np.array([self.ticks_from_start] * abs(order.size))
                     self.priv_order_book[order.asset][bid_or_ask][order.price]["id"] = np.array([self.order_history.index(order)] * abs(order.size))
 
-                order.owner._open_orders[self.order_history.index(order)] = order
+                order.owner.get_open_orders()[self.order_history.index(order)] = order
 
-                if order.asset in order.owner._order_limits:
-                    order.owner._order_limits[order.asset] += order.size
+                if order.asset in order.owner.get_current_position_size():
+                    order.owner.get_current_position_size()[order.asset] += order.size
                 else:
-                    order.owner._order_limits[order.asset] = order.size
+                    order.owner.get_current_position_size()[order.asset] = order.size
 
         self.order_cache = []
 
     def update_positions(self):
         for asset in self.position_cache:
             for owner, id, position_update, cash_update in self.position_cache[asset]:
-                self.mkt_participants[int(owner)]._update_positions(asset, position_update, cash_update)
-                self.mkt_participants[int(owner)]._open_orders[int(id)].update_size(-abs(position_update), int(id))
+                self.mkt_participants[int(owner)].update_positions(self, asset, position_update, cash_update)
+                self.mkt_participants[int(owner)].get_open_orders()[int(id)].update_size(-abs(position_update), int(id))
 
         self.position_cache = {}
 
     def clean_up(self):
         for participant in self.mkt_participants:
-            for open_order in participant._open_orders.values():
+            for open_order in participant.get_open_orders().values():
                 del open_order
 
-            for asset, open_position in participant._open_positions.items():
-                print(participant._name, "currently owns", open_position, asset, "and has cash balance", participant._cash)
-                print(participant._name, "owes/recieves", open_position, asset, "at market price", self.mkt_assets_ltp[asset])
-                participant._cash += self.mkt_assets_ltp[asset] * open_position
-                print("Now", participant._name, "has", participant._cash, "in cash")
+            for asset, open_position in participant.get_open_positions().items():
+                print(participant.get_name(), "currently owns", open_position, asset, "and has cash balance", participant.get_cash())
+                print(participant.get_name(), "owes/recieves", open_position, asset, "at market price", self.mkt_assets_ltp[asset])
+                participant.update_positions(self, asset, -open_position, self.mkt_assets_ltp[asset] * open_position)
+                print("Now", participant.get_name(), "has", participant.get_cash(), "in cash\n")
             
-            participant._open_orders = {}
-            participant._open_positions = {}
+            participant.get_open_orders().clear()
+            participant.get_open_positions().clear()
 
         for asset in self.mkt_assets:
             del self.order_book[asset]
