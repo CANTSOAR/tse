@@ -1,6 +1,6 @@
 from orderbook import Orderbook
-from basic_bot1 import bBot1
-from algo import Algo
+from basic_bot import bBot1
+from sample_algo import Algo
 
 o1 = bBot1("bot_1_oranges", 48, 0, 100, 0, "oranges")
 o2 = bBot1("bot_2_oranges", 0, 52, 0, 100, "oranges")
@@ -14,5 +14,3 @@ example_algo = Algo("sample")
 
 book = Orderbook([o1, o2, k1, k2, example_algo])
 book.main_loop(100)
-
-book.visualize()

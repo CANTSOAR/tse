@@ -38,7 +38,7 @@ class Orderbook():
 
         for participant in self.mkt_participants:
             try:
-                incoming_orders = participant.evaluate_tick(self.order_book)
+                incoming_orders: list[Order] = participant.evaluate_tick(self.order_book)
             except:
                 incoming_orders = []
 
@@ -244,12 +244,15 @@ class Orderbook():
             tick_data_size = []
 
             for timestamp in range(len(self.all_book_history)):
-                order_sizes = np.array([abs(price) / (price + .0001) * len(orders["owner"]) for price, orders in self.all_book_history[timestamp][asset].items()])
+                order_sizes = np.array([len(order["id"]) for order in self.all_book_history[timestamp][asset]["bids"].values()] + [-len(order["id"]) for order in self.all_book_history[timestamp][asset]["asks"].values()])
                 order_size_colors = (order_sizes / max((abs(order_sizes))) + 1) / 2
                 order_size_alphas = abs(order_sizes) / max((abs(order_sizes))) / 4 * 3 + .25
                 
-                tick_data.append([[timestamp] * len(self.all_book_history[timestamp][asset]), np.abs(list(self.all_book_history[timestamp][asset].keys())), order_size_colors, order_size_alphas])
-                tick_data_size.append(len(self.all_book_history[timestamp][asset]))
+                tick_data.append([[timestamp] * (len(self.all_book_history[timestamp][asset]["bids"]) + len(self.all_book_history[timestamp][asset]["asks"])), 
+                                list(self.all_book_history[timestamp][asset]["bids"].keys()) + list(self.all_book_history[timestamp][asset]["asks"].keys()), 
+                                order_size_colors, 
+                                order_size_alphas])
+                tick_data_size.append(len(self.all_book_history[timestamp][asset]["bids"]) + len(self.all_book_history[timestamp][asset]["asks"]))
 
             tick_data = np.concatenate(tick_data, axis = 1)
             tick_data_size = np.cumsum(tick_data_size)
