@@ -9,7 +9,7 @@ class Algo(Participant):
 
     def evaluate_tick(self, order_book_data):
         orders = [
-            Order("green kiwis", 150 + int(10 * random.random()) - 5, 1000 + int(10 * random.random()) - 5, self),
-            Order("green kiwis", 156 + int(10 * random.random()) - 5, -1000 + int(10 * random.random()) - 5, self)
+            Order("green kiwis", 150 + int(10 * random.random()) - 5, 1000 + int(10 * random.random()) - 5),
+            Order("green kiwis", 156 + int(10 * random.random()) - 5, -1000 + int(10 * random.random()) - 5)
                   ]
         return orders

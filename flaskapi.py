@@ -4,36 +4,50 @@ from basic_bot import bBot1
 
 collected_file_content = []
 initiated_algos = []
+algo_results = {}
 
 app = Flask(__name__)
 
-@app.route("/main")
+@app.route("/results")
 def main():
-    return "this is main page"
+    if algo_results:
+        return str(algo_results)
+
+    return "no results to show"
 
 @app.route("/receive_file", methods = ["POST"])
 def receive_file():
-    file = request.files["file"]
-    content = file.read().decode("utf-8")
-    collected_file_content.append(content)
+    try:
+        file = request.files["file"]
+        content = file.read().decode("utf-8")
+        collected_file_content.append(content)
 
-    return str("recieved code from " + file.filename)
+        return str("recieved code from " + file.filename)
+    except:
+        return "file upload failure"
 
 @app.route("/run")
 def run():
-    if len(collected_file_content):
+    if collected_file_content:
         for content in collected_file_content:
-            local = {}
-            exec(content, local)
-            algo = local["Algo"]()
-            initiated_algos.append(algo)
-            print(algo.get_name())
+            try:
+                local = {}
+                exec(content, local)
+                algo = local["Algo"]()
+                initiated_algos.append(algo)
+            except:
+                continue
 
-    book = Orderbook(initiated_algos)
-    print("everything initiated, running algo")
-    book.main_loop(100)
+    if initiated_algos:
+        book = Orderbook(initiated_algos)
+        book.main_loop(100)
 
-    return "everything ran smoothly"
+        for algo in initiated_algos:
+            algo_results[algo.get_name()] = algo.get_cash()
+
+        return "everything ran smoothly"
+    
+    return "something went wrong"
 
 if __name__ == "__main__":
     app.run(port = 8000, debug=True)

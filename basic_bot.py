@@ -14,7 +14,7 @@ class bBot1(Participant):
 
     def evaluate_tick(self, order_book_data):
         orders = []
-        if self.bid_order_size: orders.append(Order(self.asset_name, self.bid + int(10 * random.random()) - 5, self.bid_order_size + int(10 * random.random()) - 5, self))
-        if self.ask_order_size: orders.append(Order(self.asset_name, self.ask + int(10 * random.random()) - 5, -self.ask_order_size + int(10 * random.random()) - 5, self))
+        if self.bid_order_size: orders.append(Order(self.asset_name, self.bid + int(10 * random.random()) - 5, int(self.bid_order_size + int(10 * random.random()) - 5)))
+        if self.ask_order_size: orders.append(Order(self.asset_name, self.ask + int(10 * random.random()) - 5, int(-self.ask_order_size + int(10 * random.random()) - 5)))
 
         return orders #must return an array of orders

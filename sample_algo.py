@@ -7,8 +7,6 @@ class Algo(Participant):
     #DO NOT TOUCH
     def __init__(self):
         super().__init__("sample")
-        self.get_current_position_size()["oranges"] = 0
-        self.get_current_position_size()["green kiwis"] = 0
 
     #example of a basic market taking strategy (probably wont make money)
     def evaluate_tick(self, order_book_data):
@@ -31,20 +29,20 @@ class Algo(Participant):
 
             if max(orange_bids) > oranges_expected_midline - tolerance:
                 #print("long orange", min(oranges["bids"][max(orange_bids)], self.get_position_limits() - self.get_current_position_size()["oranges"]), oranges_expected_midline - tolerance)
-                ask_order = Order("oranges",oranges_expected_midline - tolerance, -min(oranges["bids"][max(orange_bids)], self.get_position_limits() - self.get_current_position_size()["oranges"]), self)
+                ask_order = Order("oranges",oranges_expected_midline - tolerance, -min(oranges["bids"][max(orange_bids)], self.get_position_limits() - self.get_current_position_size()["oranges"]))
                 orders.append(ask_order)
             if min(orange_asks) < oranges_expected_midline + tolerance:
                 #print("short orange", max(oranges["asks"][min(orange_asks)], -self.get_position_limits() - self.get_current_position_size()["oranges"]), oranges_expected_midline + tolerance)
-                bid_order = Order("oranges", oranges_expected_midline + tolerance, min(oranges["asks"][min(orange_asks)], self.get_position_limits() - self.get_current_position_size()["oranges"]), self)
+                bid_order = Order("oranges", oranges_expected_midline + tolerance, min(oranges["asks"][min(orange_asks)], self.get_position_limits() - self.get_current_position_size()["oranges"]))
                 orders.append(bid_order)
 
             if max(kiwi_bids) > kiwis_expected_midline - tolerance:
                 #print("long kiwi", min(kiwis["bids"][max(kiwi_bids)], self.get_position_limits() - self.get_current_position_size()["green kiwis"]), kiwis_expected_midline - tolerance)
-                ask_order = Order("green kiwis", kiwis_expected_midline - tolerance, -min(kiwis["bids"][max(kiwi_bids)], self.get_position_limits() - self.get_current_position_size()["green kiwis"]), self)
+                ask_order = Order("green kiwis", kiwis_expected_midline - tolerance, -min(kiwis["bids"][max(kiwi_bids)], self.get_position_limits() - self.get_current_position_size()["green kiwis"]))
                 orders.append(ask_order)
             if min(kiwi_asks) < kiwis_expected_midline + tolerance:
                 #print("short kiwi", max(kiwis["asks"][min(kiwi_asks)], -self.get_position_limits() - self.get_current_position_size()["green kiwis"]), kiwis_expected_midline + tolerance)
-                bid_order = Order("green kiwis", kiwis_expected_midline + tolerance, min(kiwis["asks"][min(kiwi_asks)], self.get_position_limits() - self.get_current_position_size()["green kiwis"]), self)
+                bid_order = Order("green kiwis", kiwis_expected_midline + tolerance, min(kiwis["asks"][min(kiwi_asks)], self.get_position_limits() - self.get_current_position_size()["green kiwis"]))
                 orders.append(bid_order)
 
 
