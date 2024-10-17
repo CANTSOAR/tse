@@ -3,9 +3,9 @@ from order import Order
 
 class Algo(Participant):
 
-    #DO NOT TOUCH
-    def __init__(self, name):
-        super().__init__(name)
+    #ONLY CHANGE NAME
+    def __init__(self):
+        super().__init__("[[NAME HERE]]")
 
     def evaluate_tick(self, order_book_data):
         #
@@ -16,6 +16,7 @@ class Algo(Participant):
         #    Be careful what orders you are creating
         #    You must create orders using the Order class
         #    Return the orders in a list
+        #    See example for some ideas (hopefully better than example)
         #
         #
 

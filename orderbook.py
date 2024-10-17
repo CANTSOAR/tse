@@ -201,7 +201,7 @@ class Orderbook():
             self.__priv_order_book[asset]["bids"].clear()
             self.__priv_order_book[asset]["asks"].clear()
 
-    def main_loop(self, ticks_to_run = float("inf")):
+    def main_loop(self, ticks_to_run = float("inf"), clean = True):
         while ticks_to_run > 0:
             self.__compute_next_tick()    #inbound orders
             self.__update_order_book()    #populate orderbook
@@ -215,7 +215,7 @@ class Orderbook():
             ticks_to_run -= 1
             if self.__tick_rate: time.sleep(1 / self.__tick_rate())
 
-        self.__clean_up() #clear all open orders and positions
+        if clean: self.__clean_up() #clear all open orders and positions
 
     def visualize(self):
         order_size_cmap = LinearSegmentedColormap.from_list("order_size_cmap", [(0, "#00ff08"), 

@@ -16,12 +16,13 @@ participants = [o1, o2, k1, k2, example_algo]
 trials = []
 
 for x in range(100):
-    print(x)
+    print(x, [participant.get_cash() for participant in participants])
     total_sum1 = 0
     for participant in participants:
         total_sum1 += participant.get_cash()
 
     book = Orderbook(participants)
+    book.main_loop(100)
     book.main_loop(100)
 
     total_sum2 = 0
